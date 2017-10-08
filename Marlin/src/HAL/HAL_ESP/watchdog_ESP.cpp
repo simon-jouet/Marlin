@@ -20,26 +20,25 @@
  *
  */
 
-#ifndef HAL_SPI_PINS_H_
-#define HAL_SPI_PINS_H_
+// #ifdef ARDUINO_ARCH_ESP826
 
-#ifdef ARDUINO_ARCH_SAM
-  #include "HAL_DUE/spi_pins.h"
+// #if OPTION_ENABLED(USE_WATCHDOG)
 
-#elif defined(IS_32BIT_TEENSY)
-  #include "HAL_TEENSY35_36/spi_pins.h"
+  #include "watchdog_ESP.h"
+  #include "../HAL.h"
 
-#elif defined(__AVR__)
-  #include "HAL_AVR/spi_pins.h"
+  void watchdogSetup(void) {
+    // do whatever. don't remove this function.
+    // Serial.write("disabled watchdog1");
+  }
 
-#elif defined(TARGET_LPC1768)
-  #include "HAL_LPC1768/spi_pins.h"
-#elif defined(__STM32F1__)
-    #include "HAL_STM32F1/spi_pins.h"
-#elif defined(ARDUINO_ARCH_ESP32)
-    #include "HAL_ESP/spi_pins.h"
-#else
-  #error "Unsupported Platform!"
-#endif
+  void watchdog_init(void) {
+    // Serial.println("ESP WDT\n");
+    // watchdogEnable(4000);
+    // Serial.write("disabled watchdog");
+    // ESP.wdtDisable();
+  }
 
-#endif // HAL_SPI_PINS_H_
+// #endif // USE_WATCHDOG
+
+// #endif

@@ -49,6 +49,7 @@
 #include "gcode/gcode.h"
 #include "gcode/parser.h"
 #include "gcode/queue.h"
+#include "Wire.h"
 
 #if HAS_BUZZER && DISABLED(LCD_USE_I2C_BUZZER)
   #include "libs/buzzer.h"
@@ -294,9 +295,9 @@ void setup_powerhold() {
  * Sensitive pin test for M42, M226
  */
 bool pin_is_protected(const int8_t pin) {
-  static const int8_t sensitive_pins[] PROGMEM = SENSITIVE_PINS;
-  for (uint8_t i = 0; i < COUNT(sensitive_pins); i++)
-    if (pin == (int8_t)pgm_read_byte(&sensitive_pins[i])) return true;
+  // static const int8_t sensitive_pins[] PROGMEM = SENSITIVE_PINS;
+  // for (uint8_t i = 0; i < COUNT(sensitive_pins); i++)
+  //   if (pin == (int8_t)pgm_read_byte(&sensitive_pins[i])) return true;
   return false;
 }
 
@@ -657,6 +658,7 @@ void stop() {
  *    • status LEDs
  */
 void setup() {
+  Wire.begin();
 
   #if ENABLED(MAX7219_DEBUG)
     Max7219_init();

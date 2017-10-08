@@ -574,7 +574,7 @@ void Stepper::isr() {
      * 10µs = 160 or 200 cycles.
      */
     #if EXTRA_CYCLES_XYZE > 20
-      uint32_t pulse_start = HAL_timer_get_current_count(STEP_TIMER_NUM);
+      HAL_TIMER_TYPE pulse_start = HAL_timer_get_current_count(STEP_TIMER_NUM);
     #endif
 
     #if HAS_X_STEP
@@ -606,7 +606,7 @@ void Stepper::isr() {
 
     // For minimum pulse time wait before stopping pulses
     #if EXTRA_CYCLES_XYZE > 20
-      while (EXTRA_CYCLES_XYZE > (uint32_t)(HAL_timer_get_current_count(STEP_TIMER_NUM) - pulse_start) * (STEPPER_TIMER_PRESCALE)) { /* nada */ }
+      while (EXTRA_CYCLES_XYZE > (HAL_TIMER_TYPE)(HAL_timer_get_current_count(STEP_TIMER_NUM) - pulse_start) * (STEPPER_TIMER_PRESCALE)) { /* nada */ }
       pulse_start = HAL_timer_get_current_count(STEP_TIMER_NUM);
     #elif EXTRA_CYCLES_XYZE > 0
       DELAY_NOPS(EXTRA_CYCLES_XYZE);

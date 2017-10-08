@@ -300,6 +300,8 @@
   #include "pins_ALLIGATOR_R2.h"
 #elif MB(STM32F1R)
   #include "pins_STM32F1R.h"
+#elif MB(ESP32)
+  #include "pins_ESP32.h"
 #else
   #error "Unknown MOTHERBOARD value set in Configuration.h"
 #endif
