@@ -51,7 +51,7 @@
   #include "HAL_STM32F1/HAL_Stm32f1.h"
 #elif defined(ARDUINO_ARCH_ESP32)
   #define CPU_32_BIT
-  #include "HAL_ESP/HAL_ESP.h"
+  #include "HAL_ESP32/HAL_ESP32.h"
   #include "math_32bit.h"
 #else
   #error "Unsupported Platform!"

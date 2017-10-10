@@ -20,26 +20,22 @@
  *
  */
 
-#ifndef HAL_SPI_PINS_H_
-#define HAL_SPI_PINS_H_
+#ifdef ARDUINO_ARCH_ESP32
 
-#ifdef ARDUINO_ARCH_SAM
-  #include "HAL_DUE/spi_pins.h"
+#include "../../inc/MarlinConfig.h"
 
-#elif defined(IS_32BIT_TEENSY)
-  #include "HAL_TEENSY35_36/spi_pins.h"
+#if ENABLED(USE_WATCHDOG)
 
-#elif defined(__AVR__)
-  #include "HAL_AVR/spi_pins.h"
+#include "watchdog_ESP32.h"
 
-#elif defined(TARGET_LPC1768)
-  #include "HAL_LPC1768/spi_pins.h"
-#elif defined(__STM32F1__)
-    #include "HAL_STM32F1/spi_pins.h"
-#elif defined(ARDUINO_ARCH_ESP32)
-    #include "HAL_ESP32/spi_pins.h"
-#else
-  #error "Unsupported Platform!"
+void watchdogSetup(void) {
+  // do whatever. don't remove this function.
+}
+
+void watchdog_init(void) {
+  // TODO
+}
+
+#endif // USE_WATCHDOG
+
 #endif
-
-#endif // HAL_SPI_PINS_H_
