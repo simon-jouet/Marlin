@@ -35,21 +35,15 @@ FORCE_INLINE void endstop_ISR_worker( void ) {
 void endstop_ISR(void) { endstop_ISR_worker(); }
 
 #ifdef __AVR__
-
   #include "HAL_AVR/endstop_interrupts.h"
-
 #elif defined(ARDUINO_ARCH_SAM)
-
   #include "HAL_DUE/endstop_interrupts.h"
-
+#elif defined(ARDUINO_ARCH_ESP32)
+  #include "HAL_ESP32/endstop_interrupts.h"
 #elif IS_32BIT_TEENSY
-
   #include "HAL_TEENSY35_36/endstop_interrupts.h"
-
 #else
-
   #error Unsupported Platform!
-
 #endif
 
 #endif /* HAL_ENDSTOP_INTERRUPTS_H_ */
