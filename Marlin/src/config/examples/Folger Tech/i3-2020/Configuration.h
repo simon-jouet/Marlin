@@ -91,7 +91,6 @@
 // example configuration folder.
 //
 //#define SHOW_CUSTOM_BOOTSCREEN
-
 // @section machine
 
 /**
@@ -120,12 +119,13 @@
 // The following define selects which electronics board you have.
 // Please choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_14_EFB
+  #define MOTHERBOARD BOARD_RAMPS_14_RE_ARM_EFB   // For people switching over to the Panucatt Re-ARM board
+//#define MOTHERBOARD BOARD_RAMPS_14_EFB          // For unmodified printers using Atmega-2560 and RAMPS boards.
 #endif
 
 // Optional custom name for your RepStrap or other custom machine
 // Displayed in the LCD "Ready" message
-#define CUSTOM_MACHINE_NAME "FT-2020"
+#define CUSTOM_MACHINE_NAME "FT-2020 v2"
 
 // Define this to set a unique identifier for this printer, (Used by some programs to differentiate between machines)
 // You can use an online service to generate a random UUID. (eg http://www.uuidgenerator.net/version4)
@@ -764,6 +764,8 @@
 
 // @section homing
 
+//#define NO_MOTION_BEFORE_HOMING  // Inhibit movement until all axes have been homed
+
 #define Z_HOMING_HEIGHT 2    // (in mm) Minimal z height before homing (G28) for Z clearance above the bed, clamps, ...
                              // Be sure you have this distance over your Z_MAX_POS in case.
 
@@ -776,15 +778,15 @@
 // @section machine
 
 // The size of the print bed
-#define X_BED_SIZE 207
-#define Y_BED_SIZE 182
+//#define X_BED_SIZE 207    // For now...  use the old method of X_MIN_POS and X_MAX_POS to set X size
+//#define Y_BED_SIZE 182    // For now...  use the old method of Y_MIN_POS and Y_MAX_POS to set Y size
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS 6
 #define Y_MIN_POS 3
 #define Z_MIN_POS 0
-#define X_MAX_POS X_BED_SIZE
-#define Y_MAX_POS Y_BED_SIZE
+#define X_MAX_POS 207
+#define Y_MAX_POS 182
 #define Z_MAX_POS 175
 
 // If enabled, axes won't move below MIN_POS in response to movement commands.
@@ -965,7 +967,7 @@
 #endif
 
 // Add a menu item to move between bed corners for manual bed adjustment
-#define LEVEL_BED_CORNERS
+//#define LEVEL_BED_CORNERS
 
 /**
  * Commands to execute at the end of G29 probing.
@@ -1036,7 +1038,7 @@
 //
 // M100 Free Memory Watcher
 //
-#define M100_FREE_MEMORY_WATCHER // uncomment to add the M100 Free Memory Watcher for debug purpose
+//#define M100_FREE_MEMORY_WATCHER // uncomment to add the M100 Free Memory Watcher for debug purpose
 
 //
 // G20/G21 Inch mode support
@@ -1507,6 +1509,35 @@
 //
 //#define OLED_PANEL_TINYBOY2
 
+//
+// Makeboard 3D Printer Parts 3D Printer Mini Display 1602 Mini Controller
+// https://www.aliexpress.com/item/Micromake-Makeboard-3D-Printer-Parts-3D-Printer-Mini-Display-1602-Mini-Controller-Compatible-with-Ramps-1/32765887917.html
+//
+//#define MAKEBOARD_MINI_2_LINE_DISPLAY_1602
+
+//
+// MKS MINI12864 with graphic controller and SD support
+// http://reprap.org/wiki/MKS_MINI_12864
+//
+//#define MKS_MINI_12864
+
+//
+// Factory display for Creality CR-10
+// https://www.aliexpress.com/item/Universal-LCD-12864-3D-Printer-Display-Screen-With-Encoder-For-CR-10-CR-7-Model/32833148327.html
+//
+// This is RAMPS-compatible using a single 10-pin connector.
+// (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
+//
+//#define CR10_STOCKDISPLAY
+
+//
+// MKS OLED 1.3" 128 × 64 FULL GRAPHICS CONTROLLER
+// http://reprap.org/wiki/MKS_12864OLED
+//
+// Tiny, but very sharp OLED display
+//
+//#define MKS_12864OLED
+
 //=============================================================================
 //=============================== Extra Features ==============================
 //=============================================================================
@@ -1563,14 +1594,20 @@
  * Adds the M150 command to set the LED (or LED strip) color.
  * If pins are PWM capable (e.g., 4, 5, 6, 11) then a range of
  * luminance values can be set from 0 to 255.
+ * For Neopixel LED overall brightness parameters is also available
  *
  * *** CAUTION ***
  *  LED Strips require a MOFSET Chip between PWM lines and LEDs,
  *  as the Arduino cannot handle the current the LEDs will require.
  *  Failure to follow this precaution can destroy your Arduino!
+ *  Neopixel LED is 5V powered, but linear 5V regulator on Arduino
+ *  cannot handle the current, separate 5V power supply must be used
  * *** CAUTION ***
  *
+ * LED type. This options are mutualy exclusive. Uncomment only one.
+ *
  */
+
 //#define RGB_LED
 //#define RGBW_LED
 #if ENABLED(RGB_LED) || ENABLED(RGBW_LED)
@@ -1581,11 +1618,14 @@
 #endif
 
 // Support for Adafruit Neopixel LED driver
-//#define NEOPIXEL_RGBW_LED
-#if ENABLED(NEOPIXEL_RGBW_LED)
-  #define NEOPIXEL_PIN    4       // D4 (EXP2-5 on Printrboard)
-  #define NEOPIXEL_PIXELS 3
-  //#define NEOPIXEL_STARTUP_TEST // Cycle through colors at startup
+//#define NEOPIXEL_LED
+#if ENABLED(NEOPIXEL_LED)
+  #define NEOPIXEL_TYPE   NEO_GRB  // NEO_GRBW / NEO_GRB - four/three channel driver type (definned in Adafruit_NeoPixel.h)
+  #define NEOPIXEL_PIN    4        // LED driving pin on motherboard 4 => D4 (EXP2-5 on Printrboard) / 30 => PC7 (EXP3-13 on Rumba)
+  #define NEOPIXEL_PIXELS 30       // Number of LEDs on strip
+  #define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Comment out for all LEDs to change at once.
+  #define NEOPIXEL_BRIGHTNESS 255  // Initial brightness 0-255
+  //#define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
 #endif
 
 /**
@@ -1599,7 +1639,7 @@
  *  - Change to green once print has finished
  *  - Turn off after the print has finished and the user has pushed a button
  */
-#if ENABLED(BLINKM) || ENABLED(RGB_LED) || ENABLED(RGBW_LED) || ENABLED(PCA9632) || ENABLED(NEOPIXEL_RGBW_LED)
+#if ENABLED(BLINKM) || ENABLED(RGB_LED) || ENABLED(RGBW_LED) || ENABLED(PCA9632) || ENABLED(NEOPIXEL_LED)
   #define PRINTER_EVENT_LEDS
 #endif
 
