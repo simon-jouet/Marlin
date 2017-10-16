@@ -136,7 +136,11 @@
 #define BOARD_RAMPS_14_RE_ARM_SF  1748   // Re-ARM with RAMPS 1.4 (Power outputs: Spindle, Controller Fan)
 #define BOARD_STM32F1R         1800  // STM3R Libmaple based stm32f1 controller
 #define BOARD_MKS_SBASE        1850  // MKS-Sbase (Power outputs: Hotend0, Hotend1, Bed, Fan)
-#define BOARD_ESP32            1900  // ESPRESSIF
+
+//
+// 32-bit Non-ARM-based boards
+//
+#define BOARD_ESP32            1900  // Espressif ESP32 (Tensilica Xtensa LX6)
 
 #define MB(board) (MOTHERBOARD==BOARD_##board)
 
