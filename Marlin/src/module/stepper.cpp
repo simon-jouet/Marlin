@@ -340,8 +340,8 @@ void Stepper::isr() {
   }while(0)
 
   if (step_remaining) {
-    if (ENDSTOPS_ENABLED)
-      endstops.update();
+    // if (ENDSTOPS_ENABLED)
+    //   endstops.update();
     if (step_remaining > ENDSTOP_NOMINAL_OCR_VAL) {
       step_remaining -= ENDSTOP_NOMINAL_OCR_VAL;
       ocr_val = ENDSTOP_NOMINAL_OCR_VAL;
@@ -396,7 +396,7 @@ void Stepper::isr() {
       step_events_completed = 0;
 
       #if ENABLED(ENDSTOP_INTERRUPTS_FEATURE)
-        e_hit = 2; // Needed for the case an endstop is already triggered before the new move begins.
+        // e_hit = 2; // Needed for the case an endstop is already triggered before the new move begins.
                    // No 'change' can be detected.
       #endif
 
