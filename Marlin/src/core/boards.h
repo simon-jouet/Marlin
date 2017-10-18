@@ -25,6 +25,9 @@
 
 #define BOARD_UNKNOWN -1
 
+//
+// 8-bit AVR-based boards
+//
 #define BOARD_GEN7_CUSTOM       10   // Gen7 custom (Alfons3 Version) "https://github.com/Alfons3/Generation_7_Electronics"
 #define BOARD_GEN7_12           11   // Gen7 v1.1, v1.2
 #define BOARD_GEN7_13           12   // Gen7 v1.3
@@ -101,7 +104,10 @@
 #define BOARD_BAM_DICE_DUE      402  // 2PrintBeta BAM&DICE Due with STK drivers
 #define BOARD_BQ_ZUM_MEGA_3D    503  // bq ZUM Mega 3D
 #define BOARD_ZRIB_V20          504  // zrib V2.0 control board (Chinese knock off RAMPS replica)
-//ARM 32
+
+//
+// 32-bit ARM-based boards
+//
 #define BOARD_DUE3DOM          1411  // DUE3DOM for Arduino DUE
 #define BOARD_DUE3DOM_MINI     1412  // DUE3DOM MINI for Arduino DUE
 #define BOARD_RADDS            1502  // RADDS
@@ -123,14 +129,18 @@
 #define BOARD_RAMPS4DUE_EEF    1546  // RAMPS4DUE (Power outputs: Hotend0, Hotend1, Fan)
 #define BOARD_RAMPS4DUE_SF     1548  // RAMPS4DUE (Power outputs: Spindle, Controller Fan)
 #define BOARD_ALLIGATOR        1602  // Alligator Board R2
-#define BOARD_RAMPS_14_RE_ARM_EFB      1743   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend, Fan, Bed)
-#define BOARD_RAMPS_14_RE_ARM_EEB      1744   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend0, Hotend1, Bed)
-#define BOARD_RAMPS_14_RE_ARM_EFF      1745   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend, Fan0, Fan1)
-#define BOARD_RAMPS_14_RE_ARM_EEF      1746   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend0, Hotend1, Fan)
-#define BOARD_RAMPS_14_RE_ARM_SF       1748   // Re-ARM with RAMPS 1.4 (Power outputs: Spindle, Controller Fan)
+#define BOARD_RAMPS_14_RE_ARM_EFB 1743   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend, Fan, Bed)
+#define BOARD_RAMPS_14_RE_ARM_EEB 1744   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend0, Hotend1, Bed)
+#define BOARD_RAMPS_14_RE_ARM_EFF 1745   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend, Fan0, Fan1)
+#define BOARD_RAMPS_14_RE_ARM_EEF 1746   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend0, Hotend1, Fan)
+#define BOARD_RAMPS_14_RE_ARM_SF  1748   // Re-ARM with RAMPS 1.4 (Power outputs: Spindle, Controller Fan)
 #define BOARD_STM32F1R         1800  // STM3R Libmaple based stm32f1 controller
-// ESPRESSIF
-#define BOARD_ESP32            1900
+#define BOARD_MKS_SBASE        1850  // MKS-Sbase (Power outputs: Hotend0, Hotend1, Bed, Fan)
+
+//
+// 32-bit Non-ARM-based boards
+//
+#define BOARD_ESP32            1900  // Espressif ESP32 (Tensilica Xtensa LX6)
 
 #define MB(board) (MOTHERBOARD==BOARD_##board)
 
