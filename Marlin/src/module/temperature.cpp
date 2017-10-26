@@ -2053,7 +2053,7 @@ void Temperature::isr() {
         #define GEBED >=
       #endif
       if (current_temperature_bed_raw GEBED bed_maxttemp_raw && target_temperature_bed > 0) max_temp_error(-1);
-      if (bed_minttemp_raw GEBED current_temperature_bed_raw && target_temperature_bed > 0) min_temp_error(-1);
+      // if (bed_minttemp_raw GEBED current_temperature_bed_raw && target_temperature_bed > 0) min_temp_error(-1);
     #endif
 
   } // temp_count >= OVERSAMPLENR
