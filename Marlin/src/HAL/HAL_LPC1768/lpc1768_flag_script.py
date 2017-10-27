@@ -12,6 +12,7 @@ if __name__ == "__main__":
                     "-ffreestanding",
                     "-fsigned-char",
                     "-fno-move-loop-invariants",
+                    "-fno-strict-aliasing",
 
                     "--specs=nano.specs",
                     "--specs=nosys.specs",
@@ -21,8 +22,7 @@ if __name__ == "__main__":
 
                     "-MMD",
                     "-MP",
-                    "-DTARGET_LPC1768",
-                    "-DIS_REARM"
+                    "-DTARGET_LPC1768"
                   ])
 
   for i in range(1, len(sys.argv)):

@@ -104,6 +104,7 @@
 #define BOARD_BAM_DICE_DUE      402  // 2PrintBeta BAM&DICE Due with STK drivers
 #define BOARD_BQ_ZUM_MEGA_3D    503  // bq ZUM Mega 3D
 #define BOARD_ZRIB_V20          504  // zrib V2.0 control board (Chinese knock off RAMPS replica)
+#define BOARD_MAKEBOARD_MINI    431  // MakeBoard Mini v2.1.2 is a control board sold by MicroMake
 
 //
 // 32-bit ARM-based boards
@@ -134,8 +135,9 @@
 #define BOARD_RAMPS_14_RE_ARM_EFF 1745   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend, Fan0, Fan1)
 #define BOARD_RAMPS_14_RE_ARM_EEF 1746   // Re-ARM with RAMPS 1.4 (Power outputs: Hotend0, Hotend1, Fan)
 #define BOARD_RAMPS_14_RE_ARM_SF  1748   // Re-ARM with RAMPS 1.4 (Power outputs: Spindle, Controller Fan)
+#define BOARD_MKS_SBASE           1750   // MKS-Sbase (Power outputs: Hotend0, Hotend1, Bed, Fan)
+#define BOARD_AZSMZ_MINI          1751   // AZSMZ Mini
 #define BOARD_STM32F1R         1800  // STM3R Libmaple based stm32f1 controller
-#define BOARD_MKS_SBASE        1850  // MKS-Sbase (Power outputs: Hotend0, Hotend1, Bed, Fan)
 
 //
 // 32-bit Non-ARM-based boards
