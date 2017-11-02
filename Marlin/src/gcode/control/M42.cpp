@@ -46,7 +46,7 @@ void GcodeSuite::M42() {
 
   pinMode(pin_number, OUTPUT);
   digitalWrite(pin_number, pin_status);
-  //analogWrite(pin_number, pin_status);
+  analogWrite(pin_number, pin_status);
 
   #if FAN_COUNT > 0
     switch (pin) {
