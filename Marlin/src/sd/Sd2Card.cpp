@@ -93,14 +93,14 @@ uint32_t Sd2Card::cardSize() {
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectHigh() {
-  digitalWrite(chipSelectPin_, HIGH);
+  // digitalWrite(chipSelectPin_, HIGH);
 }
 //------------------------------------------------------------------------------
 void Sd2Card::chipSelectLow() {
-  #if DISABLED(SOFTWARE_SPI)
-    spiInit(spiRate_);
-  #endif  // SOFTWARE_SPI
-  digitalWrite(chipSelectPin_, LOW);
+  // #if DISABLED(SOFTWARE_SPI)
+  //   spiInit(spiRate_);
+  // #endif  // SOFTWARE_SPI
+  // digitalWrite(chipSelectPin_, LOW);
 }
 //------------------------------------------------------------------------------
 /** Erase a range of blocks.

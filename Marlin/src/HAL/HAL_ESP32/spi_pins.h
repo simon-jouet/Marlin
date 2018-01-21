@@ -25,5 +25,6 @@
 #define SCK_PIN           14
 #define MISO_PIN          12
 #define MOSI_PIN          13
+#define SDSS              -1
 
 #endif /* SPI_PINS_H_ */
