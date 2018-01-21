@@ -22,21 +22,43 @@
 
 #include <Wire.h>
 #include "fastio_ESP32.h"
+#include <HardwareSerial.h>
+
+uint8_t shadow_regs[0x16];
+uint32_t shadow_init;
 
 uint8_t get_i2c_register(uint8_t reg) {
+  if (shadow_init & (1 << reg)) {
+    return shadow_regs[reg];
+  }
+
+  // Serial.printf("read i2c %d\n", reg);
   Wire.beginTransmission(GPIOX_I2C_ADDR);
   Wire.write(reg);
   Wire.endTransmission();
 
   Wire.requestFrom(GPIOX_I2C_ADDR, 1);
-  return Wire.read();
+  uint8_t read = Wire.read();
+
+  shadow_regs[reg] = read;
+  shadow_init = shadow_init | (1 << reg);
+
+  return read;
 }
 
 void set_i2c_register(uint8_t reg, uint8_t val) {
+  if ((shadow_init & (1 << reg)) && shadow_regs[reg] == val)  {
+    return;
+  }
+
+  // Serial.printf("write i2c %d\n", reg);
   Wire.beginTransmission(GPIOX_I2C_ADDR);
   Wire.write(reg);
   Wire.write(val);
   Wire.endTransmission();
+
+  shadow_regs[reg] = val;
+  shadow_init = shadow_init | (1 << reg);
 }
 
 void set_i2c_bit(uint8_t reg, uint8_t bit, uint8_t val) {
@@ -54,9 +76,11 @@ void set_i2c_pin_pullup(uint8_t pin, bool pullup) {
 }
 
 uint8_t get_i2c_pin(uint8_t pin) {
+  // Serial.printf("pin %d\n", pin);
   return ((get_i2c_register(GET_REGISTER(pin, GPIOA)) >> GET_PIN(pin)) & 0x1);
 }
 
 void set_i2c_pin(uint8_t pin, uint8_t val) {
+  // Serial.printf("set %d\n", pin);
   set_i2c_bit(GET_REGISTER(pin, OLATA), GET_PIN(pin), val);
 }
