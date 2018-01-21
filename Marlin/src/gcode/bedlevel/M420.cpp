@@ -45,6 +45,8 @@
  */
 void GcodeSuite::M420() {
 
+  const float oldpos[] = { current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] };
+
   #if ENABLED(AUTO_BED_LEVELING_UBL)
 
     // L to load a mesh from the EEPROM
@@ -98,18 +100,21 @@ void GcodeSuite::M420() {
           #endif
         #elif ENABLED(MESH_BED_LEVELING)
           SERIAL_ECHOLNPGM("Mesh Bed Level data:");
-          mbl_mesh_report();
+          mbl.report_mesh();
         #endif
       }
     #endif
   }
 
-  const bool to_enable = parser.boolval('S');
-  if (parser.seen('S')) set_bed_leveling_enabled(to_enable);
-
   #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
-    if (parser.seen('Z')) set_z_fade_height(parser.value_linear_units());
+    if (parser.seen('Z')) set_z_fade_height(parser.value_linear_units(), false);
   #endif
+
+  bool to_enable = false;
+  if (parser.seen('S')) {
+    to_enable = parser.value_bool();
+    set_bed_leveling_enabled(to_enable);
+  }
 
   const bool new_status = planner.leveling_active;
 
@@ -129,6 +134,10 @@ void GcodeSuite::M420() {
     else
       SERIAL_ECHOLNPGM(MSG_OFF);
   #endif
+
+  // Report change in position
+  if (memcmp(oldpos, current_position, sizeof(oldpos)))
+    report_current_position();
 }
 
 #endif // HAS_LEVELING

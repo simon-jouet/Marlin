@@ -76,7 +76,7 @@
 #endif
 
 #if HAS_SERVOS
-  #include "HAL/servo.h"
+  #include "module/servo.h"
 #endif
 
 #if HAS_DIGIPOTSS
@@ -100,8 +100,8 @@
   #include "HAL/HAL_endstop_interrupts.h"
 #endif
 
-#if ENABLED(HAVE_TMC2130)
-  #include "feature/tmc2130.h"
+#if HAS_TRINAMIC
+  #include "feature/tmc_util.h"
 #endif
 
 #if ENABLED(SDSUPPORT)
@@ -139,6 +139,10 @@
   #include "feature/caselight.h"
 #endif
 
+#if HAS_FANMUX
+  #include "feature/fanmux.h"
+#endif
+
 #if (ENABLED(SWITCHING_EXTRUDER) && !DONT_SWITCH) || ENABLED(SWITCHING_NOZZLE) || ENABLED(PARKING_EXTRUDER)
   #include "module/tool_change.h"
 #endif
@@ -166,7 +170,7 @@ bool axis_homed[XYZ] = { false }, axis_known_position[XYZ] = { false };
 
 #if FAN_COUNT > 0
   int16_t fanSpeeds[FAN_COUNT] = { 0 };
-  #if ENABLED(EXTRA_FAN_SPEEDS)
+  #if ENABLED(EXTRA_FAN_SPEED)
     int16_t old_fanSpeeds[FAN_COUNT],
             new_fanSpeeds[FAN_COUNT];
   #endif
@@ -187,10 +191,6 @@ volatile bool wait_for_heatup = true;
 // Inactivity shutdown
 millis_t max_inactive_time = 0,
          stepper_inactive_time = (DEFAULT_STEPPER_DEACTIVE_TIME) * 1000UL;
-
-#if ENABLED(ADVANCED_PAUSE_FEATURE)
-  AdvancedPauseMenuResponse advanced_pause_menu_response;
-#endif
 
 #ifdef CHDK
   millis_t chdkHigh = 0;
@@ -243,35 +243,6 @@ void setup_powerhold() {
     #endif
   #endif
 }
-
-#if HAS_SERVOS
-
-  HAL_SERVO_LIB servo[NUM_SERVOS];
-
-  void servo_init() {
-    #if NUM_SERVOS >= 1 && HAS_SERVO_0
-      servo[0].attach(SERVO0_PIN);
-      servo[0].detach(); // Just set up the pin. We don't have a position yet. Don't move to a random position.
-    #endif
-    #if NUM_SERVOS >= 2 && HAS_SERVO_1
-      servo[1].attach(SERVO1_PIN);
-      servo[1].detach();
-    #endif
-    #if NUM_SERVOS >= 3 && HAS_SERVO_2
-      servo[2].attach(SERVO2_PIN);
-      servo[2].detach();
-    #endif
-    #if NUM_SERVOS >= 4 && HAS_SERVO_3
-      servo[3].attach(SERVO3_PIN);
-      servo[3].detach();
-    #endif
-
-    #if HAS_Z_SERVO_ENDSTOP
-      servo_probe_init();
-    #endif
-  }
-
-#endif // HAS_SERVOS
 
 /**
  * Stepper Reset (RigidBoard, et.al.)
@@ -334,6 +305,16 @@ void disable_e_steppers() {
   disable_E4();
 }
 
+void disable_e_stepper(const uint8_t e) {
+  switch (e) {
+    case 0: disable_E0(); break;
+    case 1: disable_E1(); break;
+    case 2: disable_E2(); break;
+    case 3: disable_E3(); break;
+    case 4: disable_E4(); break;
+  }
+}
+
 void disable_all_steppers() {
   disable_X();
   disable_Y();
@@ -372,7 +353,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) {
 
   // Prevent steppers timing-out in the middle of M600
   #if ENABLED(ADVANCED_PAUSE_FEATURE) && ENABLED(PAUSE_PARK_NO_STEPPER_TIMEOUT)
-    #define MOVE_AWAY_TEST !move_away_flag
+    #define MOVE_AWAY_TEST !did_pause_print
   #else
     #define MOVE_AWAY_TEST true
   #endif
@@ -391,7 +372,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) {
     #if ENABLED(DISABLE_INACTIVE_E)
       disable_e_steppers();
     #endif
-    #if ENABLED(AUTO_BED_LEVELING_UBL) && ENABLED(ULTRA_LCD)  // Only needed with an LCD
+    #if ENABLED(AUTO_BED_LEVELING_UBL) && ENABLED(ULTIPANEL)  // Only needed with an LCD
       ubl.lcd_map_control = defer_return_to_status = false;
     #endif
   }
@@ -515,11 +496,16 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) {
     handle_status_leds();
   #endif
 
-  #if ENABLED(HAVE_TMC2130)
-    tmc2130_checkOverTemp();
+  #if ENABLED(MONITOR_DRIVER_STATUS)
+    monitor_tmc_driver();
   #endif
 
-  planner.check_axes_activity();
+  // Limit check_axes_activity frequency to 10Hz
+  static millis_t next_check_axes_ms = 0;
+  if (ELAPSED(ms, next_check_axes_ms)) {
+    planner.check_axes_activity();
+    next_check_axes_ms = ms + 100UL;
+  }
 }
 
 /**
@@ -568,6 +554,10 @@ void idle(
       I2CPEM.update();
       lastUpdateMillis = millis();
     }
+  #endif
+
+  #ifdef HAL_IDLETASK
+    HAL_idletask();
   #endif
 }
 
@@ -655,11 +645,15 @@ void stop() {
 void setup() {
   Wire.begin();
 
+  #ifdef HAL_INIT
+    HAL_init();
+  #endif
+
   #if ENABLED(MAX7219_DEBUG)
     Max7219_init();
   #endif
 
-  #ifdef DISABLE_JTAG
+  #if ENABLED(DISABLE_JTAG)
     // Disable JTAG on AT90USB chips to free up pins for IO
     MCUCR = 0x80;
     MCUCR = 0x80;
@@ -677,9 +671,22 @@ void setup() {
     disableStepperDrivers();
   #endif
 
-  MYSERIAL.begin(BAUDRATE);
-  uint32_t serial_connect_timeout = millis() + 1000;
-  while(!MYSERIAL && PENDING(millis(), serial_connect_timeout));
+  #if NUM_SERIAL > 0
+    MYSERIAL0.begin(BAUDRATE);
+    #if NUM_SERIAL > 1
+      MYSERIAL1.begin(BAUDRATE);
+    #endif
+  #endif
+
+  #if NUM_SERIAL > 0
+    uint32_t serial_connect_timeout = millis() + 1000UL;
+    while(!MYSERIAL0 && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
+    #if NUM_SERIAL > 1
+      serial_connect_timeout = millis() + 1000UL;
+      while(!MYSERIAL1 && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
+    #endif
+  #endif
+
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START();
 
@@ -738,6 +745,10 @@ void setup() {
     servo_init();
   #endif
 
+  #if HAS_Z_SERVO_ENDSTOP
+    servo_probe_init();
+  #endif
+
   #if HAS_PHOTOGRAPH
     OUT_WRITE(PHOTOGRAPH_PIN, LOW);
   #endif
@@ -793,8 +804,8 @@ void setup() {
     OUT_WRITE(STAT_LED_BLUE_PIN, LOW); // turn it off
   #endif
 
-  #if ENABLED(NEOPIXEL_LED)
-    setup_neopixel();
+  #if HAS_COLOR_LEDS
+    leds.setup();
   #endif
 
   #if ENABLED(RGB_LED) || ENABLED(RGBW_LED)
@@ -818,23 +829,8 @@ void setup() {
 
   lcd_init();
 
-  #ifndef CUSTOM_BOOTSCREEN_TIMEOUT
-    #define CUSTOM_BOOTSCREEN_TIMEOUT 2500
-  #endif
-
   #if ENABLED(SHOW_BOOTSCREEN)
-    #if ENABLED(DOGLCD)                           // On DOGM the first bootscreen is already drawn
-      #if ENABLED(SHOW_CUSTOM_BOOTSCREEN)
-        safe_delay(CUSTOM_BOOTSCREEN_TIMEOUT);    // Custom boot screen pause
-        lcd_bootscreen();                         // Show Marlin boot screen
-      #endif
-      safe_delay(BOOTSCREEN_TIMEOUT);             // Pause
-    #elif ENABLED(ULTRA_LCD)
-      lcd_bootscreen();
-      #if DISABLED(SDSUPPORT)
-        lcd_init();
-      #endif
-    #endif
+    lcd_bootscreen();
   #endif
 
   #if ENABLED(MIXING_EXTRUDER) && MIXING_VIRTUAL_TOOLS > 1

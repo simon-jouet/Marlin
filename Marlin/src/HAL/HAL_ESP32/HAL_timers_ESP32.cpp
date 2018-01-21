@@ -95,7 +95,7 @@ void HAL_timer_start (uint8_t timer_num, uint32_t frequency) {
  * @param timer_num timer number to set the count to
  * @param count     threshold at which the interrupt is triggered
  */
-void HAL_timer_set_count(uint8_t timer_num, HAL_TIMER_TYPE count) {
+void HAL_timer_set_count(const uint8_t timer_num, const uint32_t count) {
   timerAlarmWrite(timers[timer_num], count, false);
 }
 
@@ -104,7 +104,7 @@ void HAL_timer_set_count(uint8_t timer_num, HAL_TIMER_TYPE count) {
  * @param  timer_num timer number to get the count from
  * @return           the timer current threshold for the alarm to be triggered
  */
-HAL_TIMER_TYPE HAL_timer_get_count (uint8_t timer_num) {
+hal_timer_t HAL_timer_get_count(const uint8_t timer_num) {
   return timerAlarmRead(timers[timer_num]);
 }
 
@@ -113,7 +113,7 @@ HAL_TIMER_TYPE HAL_timer_get_count (uint8_t timer_num) {
  * @param  timer_num timer number to get the current count
  * @return           the current counter of the alarm
  */
-HAL_TIMER_TYPE HAL_timer_get_current_count(uint8_t timer_num) {
+uint32_t HAL_timer_get_current_count(const uint8_t timer_num) {
   return timerRead(timers[timer_num]);
 }
 
@@ -139,6 +139,10 @@ void HAL_timer_disable_interrupt (uint8_t timer_num) {
  */
 void HAL_timer_isr_prologue(uint8_t timer_num) {
   timerWrite(timers[timer_num], 0);
+}
+
+bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {
+  return timerAlarmEnabled(timers[timer_num]);
 }
 
 #endif // ARDUINO_ARCH_ESP32

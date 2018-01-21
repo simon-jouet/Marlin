@@ -21,9 +21,15 @@
 // Defines
 // --------------------------------------------------------------------------
 
+#define NUM_SERIAL 1
+
 // void digitalWrite(uint8_t pin, uint8_t val);
 
-#define MYSERIAL Serial
+#if SERIAL_PORT == -1
+  #define MYSERIAL0 Serial
+#elif SERIAL_PORT == 0
+  #define MYSERIAL0 Serial
+#endif
 
 #define CRITICAL_SECTION_START cli()
 #define CRITICAL_SECTION_END sei()

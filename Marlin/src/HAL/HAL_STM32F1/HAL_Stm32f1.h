@@ -40,30 +40,67 @@
 
 #include <stdint.h>
 
-#include "Arduino.h"
+#include <Arduino.h>
+
+// --------------------------------------------------------------------------
+// Undefine DEBUG_ settings
+// --------------------------------------------------------------------------
+
+
+#undef DEBUG_NONE
+#undef DEBUG_FAULT
+#undef DEBUG_ALL
+
+// --------------------------------------------------------------------------
+// Includes
+// --------------------------------------------------------------------------
 
 #include "fastio_Stm32f1.h"
 #include "watchdog_Stm32f1.h"
 
 #include "HAL_timers_Stm32f1.h"
 
+
 // --------------------------------------------------------------------------
 // Defines
 // --------------------------------------------------------------------------
 
+#if !WITHIN(SERIAL_PORT, -1, 3)
+  #error "SERIAL_PORT must be from -1 to 3"
+#endif
 #if SERIAL_PORT == -1
-  #define MYSERIAL SerialUSB
+  #define MYSERIAL0 SerialUSB
 #elif SERIAL_PORT == 0
-  #define MYSERIAL Serial
+  #define MYSERIAL0 Serial
 #elif SERIAL_PORT == 1
-  #define MYSERIAL Serial1
+  #define MYSERIAL0 Serial1
 #elif SERIAL_PORT == 2
-  #define MYSERIAL Serial2
+  #define MYSERIAL0 Serial2
 #elif SERIAL_PORT == 3
-  #define MYSERIAL Serial3
+  #define MYSERIAL0 Serial3
 #endif
 
-#define _BV(bit) 	(1 << (bit))
+#ifdef SERIAL_PORT_2
+  #if !WITHIN(SERIAL_PORT_2, -1, 3)
+    #error "SERIAL_PORT_2 must be from -1 to 3"
+  #elif SERIAL_PORT_2 == SERIAL_PORT
+    #error "SERIAL_PORT_2 must be different than SERIAL_PORT"
+  #endif
+  #define NUM_SERIAL 2
+  #if SERIAL_PORT_2 == -1
+    #define MYSERIAL1 SerialUSB
+  #elif SERIAL_PORT_2 == 0
+    #define MYSERIAL1 Serial
+  #elif SERIAL_PORT_2 == 1
+    #define MYSERIAL1 Serial1
+  #elif SERIAL_PORT_2 == 2
+    #define MYSERIAL1 Serial2
+  #elif SERIAL_PORT_2 == 3
+    #define MYSERIAL1 Serial3
+  #endif
+#else
+  #define NUM_SERIAL 1
+#endif
 
 /**
  * TODO: review this to return 1 for pins that are not analog input
@@ -72,7 +109,7 @@
   #define analogInputToDigitalPin(p) (p)
 #endif
 
-#define CRITICAL_SECTION_START	noInterrupts();
+#define CRITICAL_SECTION_START  noInterrupts();
 #define CRITICAL_SECTION_END    interrupts();
 
 // On AVR this is in math.h?
@@ -171,7 +208,7 @@ void eeprom_update_block (const void *__src, void *__dst, size_t __n);
 
 #define HAL_ANALOG_SELECT(pin) pinMode(pin, INPUT_ANALOG);
 
-inline void HAL_adc_init(void) {}
+void HAL_adc_init(void);
 
 #define HAL_START_ADC(pin)  HAL_adc_start_conversion(pin)
 #define HAL_READ_ADC        HAL_adc_result

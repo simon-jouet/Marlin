@@ -35,13 +35,16 @@
 //
 #define FORCE_INLINE __attribute__((always_inline)) inline
 
-#define HAL_TIMER_TYPE uint64_t
+typedef uint32_t hal_timer_t;
 
 #define STEP_TIMER_NUM 0  // index of timer to use for stepper
 #define TEMP_TIMER_NUM 1  // index of timer to use for temperature
 
 #define STEP_TIMER_PRESCALE 80
 #define TEMP_TIMER_PRESCALE 80
+
+#define PULSE_TIMER_NUM STEP_TIMER_NUM
+#define PULSE_TIMER_PRESCALE STEPPER_TIMER_PRESCALE
 
 #define STEPPER_TIMER_PRESCALE STEP_TIMER_PRESCALE
 
@@ -57,6 +60,7 @@
 
 #define ENABLE_STEPPER_DRIVER_INTERRUPT() HAL_timer_enable_interrupt (STEP_TIMER_NUM)
 #define DISABLE_STEPPER_DRIVER_INTERRUPT()  HAL_timer_disable_interrupt (STEP_TIMER_NUM)
+#define STEPPER_ISR_ENABLED() HAL_timer_interrupt_enabled(STEP_TIMER_NUM)
 
 #define ENABLE_TEMPERATURE_INTERRUPT()  HAL_timer_enable_interrupt (TEMP_TIMER_NUM)
 #define DISABLE_TEMPERATURE_INTERRUPT() HAL_timer_disable_interrupt (TEMP_TIMER_NUM)
@@ -85,12 +89,13 @@ extern "C" void stepTC_Handler(void);
 
 void HAL_timer_start (uint8_t timer_num, uint32_t frequency);
 
-void HAL_timer_set_count(uint8_t timer_num, HAL_TIMER_TYPE count);
-HAL_TIMER_TYPE HAL_timer_get_count (uint8_t timer_num);
-HAL_TIMER_TYPE HAL_timer_get_current_count(uint8_t timer_num);
+void HAL_timer_set_count(const uint8_t timer_num, const uint32_t count);
+hal_timer_t HAL_timer_get_count(const uint8_t timer_num);
+uint32_t HAL_timer_get_current_count(const uint8_t timer_num);
 
 void HAL_timer_enable_interrupt(uint8_t timer_num);
 void HAL_timer_disable_interrupt(uint8_t timer_num);
 void HAL_timer_isr_prologue(uint8_t timer_num);
+bool HAL_timer_interrupt_enabled(const uint8_t timer_num);
 
 #endif // _HAL_TIMERS_ESP32_H

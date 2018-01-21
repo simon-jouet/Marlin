@@ -26,8 +26,8 @@
  *
  * This file is part of the Arduino Sd2Card Library
  */
-#ifndef SDFATUTIL_H
-#define SDFATUTIL_H
+#ifndef _SDFATUTIL_H_
+#define _SDFATUTIL_H_
 
 #include <string.h>
 
@@ -35,19 +35,11 @@
  * \file
  * \brief Useful utility functions.
  */
-/** Store and print a string in flash memory.*/
-#define PgmPrint(x) SerialPrint_P(PSTR(x))
-/** Store and print a string in flash memory followed by a CR/LF.*/
-#define PgmPrintln(x) SerialPrintln_P(PSTR(x))
 
 namespace SdFatUtil {
   int FreeRam();
-  void print_P(PGM_P str);
-  void println_P(PGM_P str);
-  void SerialPrint_P(PGM_P str);
-  void SerialPrintln_P(PGM_P str);
 }
 
 using namespace SdFatUtil;  // NOLINT
 
-#endif // SDFATUTIL_H
+#endif // _SDFATUTIL_H_

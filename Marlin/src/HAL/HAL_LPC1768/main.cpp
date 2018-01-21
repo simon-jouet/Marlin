@@ -30,7 +30,7 @@ extern "C" {
 #include "HAL_timers.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include "arduino.h"
+#include "include/arduino.h"
 #include "serial.h"
 #include "LPC1768_PWM.h"
 
@@ -79,8 +79,8 @@ int main(void) {
   USB_Init();                               // USB Initialization
   USB_Connect(TRUE);                        // USB Connect
 
-  volatile uint32_t usb_timeout = millis() + 2000;
-  while (!USB_Configuration && millis() < usb_timeout) {
+  const uint32_t usb_timeout = millis() + 2000;
+  while (!USB_Configuration && PENDING(millis(), usb_timeout)) {
     delay(50);
 
     #if PIN_EXISTS(LED)
@@ -88,14 +88,13 @@ int main(void) {
     #endif
   }
 
-  // Only initialize the debug framework if using the USB emulated serial port
-  if ((HalSerial*) &MYSERIAL == &usb_serial)
-    debug_frmwrk_init();
-
-  MYSERIAL.begin(BAUDRATE);
-  MYSERIAL.printf("\n\nLPC1768 (%dMhz) UART0 Initialised\n", SystemCoreClock / 1000000);
-  #if TX_BUFFER_SIZE > 0
-    MYSERIAL.flushTX();
+  #if NUM_SERIAL > 0
+    MYSERIAL0.begin(BAUDRATE);
+    #if NUM_SERIAL > 1
+      MYSERIAL1.begin(BAUDRATE);
+    #endif
+    SERIAL_PRINTF("\n\nLPC1768 (%dMhz) UART0 Initialised\n", SystemCoreClock / 1000000);
+    SERIAL_FLUSHTX();
   #endif
 
   HAL_timer_init();

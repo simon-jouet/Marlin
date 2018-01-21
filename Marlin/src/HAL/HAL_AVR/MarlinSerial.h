@@ -32,7 +32,7 @@
 #ifndef _MARLINSERIAL_H_
 #define _MARLINSERIAL_H_
 
-#include "../../inc/MarlinConfig.h"
+#include "../../inc/MarlinConfigPre.h"
 
 #include <WString.h>
 
@@ -75,7 +75,6 @@
 #define HEX 16
 #define OCT 8
 #define BIN 2
-#define BYTE 0
 
 #ifndef USBCON
   // We're using a ring buffer (I think), in which rx_buffer_head is the index of the
@@ -121,13 +120,13 @@
         FORCE_INLINE static ring_buffer_pos_t rxMaxEnqueued() { return rx_max_enqueued; }
       #endif
 
-      static FORCE_INLINE void write(const char* str) { while (*str) write(*str++); }
-      static FORCE_INLINE void write(const uint8_t* buffer, size_t size) { while (size--) write(*buffer++); }
-      static FORCE_INLINE void print(const String& s) { for (int i = 0; i < (int)s.length(); i++) write(s[i]); }
-      static FORCE_INLINE void print(const char* str) { write(str); }
+      FORCE_INLINE static void write(const char* str) { while (*str) write(*str++); }
+      FORCE_INLINE static void write(const uint8_t* buffer, size_t size) { while (size--) write(*buffer++); }
+      FORCE_INLINE static void print(const String& s) { for (int i = 0; i < (int)s.length(); i++) write(s[i]); }
+      FORCE_INLINE static void print(const char* str) { write(str); }
 
-      static void print(char, int = BYTE);
-      static void print(unsigned char, int = BYTE);
+      static void print(char, int = 0);
+      static void print(unsigned char, int = 0);
       static void print(int, int = DEC);
       static void print(unsigned int, int = DEC);
       static void print(long, int = DEC);
@@ -136,8 +135,8 @@
 
       static void println(const String& s);
       static void println(const char[]);
-      static void println(char, int = BYTE);
-      static void println(unsigned char, int = BYTE);
+      static void println(char, int = 0);
+      static void println(unsigned char, int = 0);
       static void println(int, int = DEC);
       static void println(unsigned int, int = DEC);
       static void println(long, int = DEC);
