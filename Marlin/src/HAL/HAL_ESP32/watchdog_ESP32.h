@@ -28,6 +28,6 @@
 void watchdog_init();
 
 // Reset watchdog.
-inline void watchdog_reset() {esp_task_wdt_feed();};
+inline void watchdog_reset() {esp_task_wdt_reset();};
 
 #endif /* WATCHDOG_ESP32_H */
