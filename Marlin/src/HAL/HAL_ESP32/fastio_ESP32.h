@@ -27,65 +27,31 @@
   utility functions
 */
 
-// MCP23017 registers
-#define IODIRA    0x00
-#define IODIRB    0x01
-#define IPOLA     0x02
-#define IPOLB     0x03
-#define GPINTENA  0x04
-#define GPINTENB  0x05
-#define DEFVALA   0x06
-#define DEFVALB   0x07
-#define INTCONA   0x08
-#define INTCONB   0x09
-#define IOCON     0x0A
-#define GPPUA     0x0C
-#define GPPUB     0x0D
-#define INTFA     0x0E
-#define INTFB     0x0F
-#define INTCAPA   0x10
-#define INTCAPB   0x11
-#define GPIOA     0x12
-#define GPIOB     0x13
-#define OLATA     0x14
-#define OLATB     0x15
-
-#define GPIOX_I2C_ADDR 0x20
-
-#define GET_REGISTER(IO, reg) ((IO & 0x7F) < 8 ? reg : reg+1)
-#define GET_PIN(IO) ((IO & 0x7F) < 8 ? (IO&0x7F) : (IO&0x7F)-8)
-
-uint8_t get_i2c_register(uint8_t reg);
-void set_i2c_register(uint8_t reg, uint8_t val);
-void set_i2c_pin_mode(uint8_t pin, uint8_t mode);
-void set_i2c_pin_pullup(uint8_t pin, bool pullup);
-uint8_t get_i2c_pin(uint8_t pin);
-void set_i2c_pin(uint8_t pin, uint8_t val);
-
 //
-#define _SET_INPUT(IO)      (IO) & 0x80 ? set_i2c_pin_mode((IO)&0x7f, INPUT) : pinMode(IO, INPUT)
+#define _SET_INPUT(IO)      pinMode(IO, INPUT)
 
 // set pin as output
-#define _SET_OUTPUT(IO)     (IO) & 0x80 ? set_i2c_pin_mode((IO)&0x7f, OUTPUT) : pinMode(IO, OUTPUT)
+#define _SET_OUTPUT(IO)     pinMode(IO, OUTPUT)
 
 // set pin as input with pullup mode
-#define _PULLUP(IO, v)      (IO) & 0x80 ? set_i2c_pin_pullup((IO)&0x7f, v) : pinMode(IO, v ? INPUT_PULLUP : INPUT)
+#define _PULLUP(IO, v)      pinMode(IO, v ? INPUT_PULLUP : INPUT)
 
 // Read a pin wrapper
-#define _READ(IO)            (IO) & 0x80 ? get_i2c_pin((IO)&0x7f) : digitalRead(IO)
-#define READ(IO)             (_READ(IO) ? HIGH : LOW)
+#define READ(IO)            digitalRead(IO)
 
 // Write to a pin wrapper
-#define WRITE(IO, v)        (IO) & 0x80 ? set_i2c_pin((IO)&0x7f, v) : digitalWrite(IO, v)
+#define WRITE(IO, v)        digitalWrite(IO, v)
 
 // set pin as input wrapper
-#define SET_INPUT(IO)  _SET_INPUT(IO)
+#define SET_INPUT(IO)       _SET_INPUT(IO)
 
 // set pin as input with pullup wrapper
 #define SET_INPUT_PULLUP(IO) do{ _SET_INPUT(IO); _PULLUP(IO, HIGH); }while(0)
 
 // set pin as output wrapper
 #define SET_OUTPUT(IO)  do{ _SET_OUTPUT(IO); WRITE(IO, LOW); }while(0)
+
+#define OUT_WRITE(IO,V)         do{ _SET_OUTPUT(IO); WRITE(IO,V); }while(0)
 
 /**
   ports and functions

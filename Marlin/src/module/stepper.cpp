@@ -1153,7 +1153,7 @@ HAL_STEP_TIMER_ISR {
   // Program timer compare for the maximum period, so it does NOT
   // flag an interrupt while this ISR is running - So changes from small
   // periods to big periods are respected and the timer does not reset to 0
-  HAL_timer_set_compare(STEP_TIMER_NUM, HAL_TIMER_TYPE_MAX);
+  // HAL_timer_set_compare(STEP_TIMER_NUM, HAL_TIMER_TYPE_MAX);
 
   // Call the ISR scheduler
   hal_timer_t ticks = Stepper::isr_scheduler();

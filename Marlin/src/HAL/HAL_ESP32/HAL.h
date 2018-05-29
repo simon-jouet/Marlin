@@ -1,6 +1,8 @@
 #ifndef _HAL_ESP32_H
 #define _HAL_ESP32_H
 
+#define CPU_32_BIT
+
 // --------------------------------------------------------------------------
 // Includes
 // --------------------------------------------------------------------------
@@ -8,9 +10,13 @@
 #include <stdint.h>
 
 #undef DISABLED
+#undef _BV
 #include <Arduino.h>
 #undef DISABLED
 #define DISABLED(b) (!_CAT(SWITCH_ENABLED_, b))
+
+#include "../math_32bit.h"
+#include "../HAL_SPI.h"
 
 #include "fastio_ESP32.h"
 #include "watchdog_ESP32.h"
@@ -21,9 +27,8 @@
 // Defines
 // --------------------------------------------------------------------------
 
-// void digitalWrite(uint8_t pin, uint8_t val);
-
-#define MYSERIAL Serial
+#define NUM_SERIAL 1
+#define MYSERIAL0 Serial
 
 #define CRITICAL_SECTION_START cli()
 #define CRITICAL_SECTION_END sei()

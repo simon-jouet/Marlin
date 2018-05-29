@@ -34,9 +34,9 @@
 // Limit Switches
 //
 #define ENDSTOP_INTERRUPTS_PIN 35
-#define X_MIN_PIN          141
-#define Y_MIN_PIN          139
-#define Z_MIN_PIN          137
+#define X_MIN_PIN           14
+#define Y_MIN_PIN           12
+#define Z_MIN_PIN           13
 
 //
 // Z Probe (when not Z_MIN_PIN)
@@ -49,21 +49,21 @@
 //
 // Steppers
 //
-#define X_STEP_PIN          32
-#define X_DIR_PIN           33
-#define X_ENABLE_PIN       130
+#define X_STEP_PIN          27
+#define X_DIR_PIN           26
+#define X_ENABLE_PIN        25
 
-#define Y_STEP_PIN          16
-#define Y_DIR_PIN            5
-#define Y_ENABLE_PIN       129
+#define Y_STEP_PIN          33
+#define Y_DIR_PIN           32
+#define Y_ENABLE_PIN        X_ENABLE_PIN
 
-#define Z_STEP_PIN           2
-#define Z_DIR_PIN           27
-#define Z_ENABLE_PIN       129
+#define Z_STEP_PIN          14
+#define Z_DIR_PIN           12
+#define Z_ENABLE_PIN        X_ENABLE_PIN
 
 #define E0_STEP_PIN         17
 #define E0_DIR_PIN          16
-#define E0_ENABLE_PIN      131
+#define E0_ENABLE_PIN       X_ENABLE_PIN
 
 //
 // Temperature Sensors
@@ -72,7 +72,7 @@
 #define TEMP_BED_PIN        39   // Analog Input
 
 //
-// Augmentation for auto-assigning RAMPS plugs
+// Augmentation for auto-assigning RAMPS plug
 //
 #if DISABLED(IS_RAMPS_EEB) && DISABLED(IS_RAMPS_EEF) && DISABLED(IS_RAMPS_EFB) && DISABLED(IS_RAMPS_EFF) && DISABLED(IS_RAMPS_SF) && !PIN_EXISTS(MOSFET_D)
   #if HOTENDS > 1
