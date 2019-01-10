@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#include "i2s.h"
+
 /**
  * Utility functions
  */
@@ -38,7 +40,7 @@
 #define READ(IO)            digitalRead(IO)
 
 // Write to a pin wrapper
-#define WRITE(IO, v)        digitalWrite(IO, v)
+#define WRITE(IO, v)        (TEST(IO, 7) ? i2s_write(IO & 0x7F  , v) : digitalWrite(IO, v))
 
 // set pin as input wrapper
 #define SET_INPUT(IO)       _SET_INPUT(IO)
