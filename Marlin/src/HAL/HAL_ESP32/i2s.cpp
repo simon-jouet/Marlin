@@ -141,9 +141,7 @@ void i2s_init()
     I2S0.conf.tx_short_sync = 0;
     I2S0.conf.rx_short_sync = 0;
     I2S0.conf.tx_msb_shift = 0;
-    I2S0.conf.rx_msb_shift = 0;
-
-    I2S0.sample_rate_conf.tx_bits_mod = 32;
+    I2S0.conf.rx_msb_shift = 0; 
 
     // set clock, fbck = fpll/(N + b/a)
     I2S0.clkm_conf.clka_en = 0;      // Use PLL/2 as reference
@@ -168,5 +166,6 @@ void i2s_init()
 }
 
 void i2s_write(uint8_t pin, uint8_t val) {
-    SET_BIT_TO(I2S0.conf_single_data, pin, val);
+    // in 16 bits mode the top 2 bytes are sent
+    SET_BIT_TO(I2S0.conf_single_data, pin+16, val);
 }
