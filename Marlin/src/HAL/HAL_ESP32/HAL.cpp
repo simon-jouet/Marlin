@@ -68,6 +68,7 @@ uint16_t HAL_adc_result;
 
 esp_adc_cal_characteristics_t characteristics[ADC_ATTEN_MAX];
 adc_atten_t attenuations[ADC1_CHANNEL_MAX] = {};
+uint32_t thresholds[ADC_ATTEN_MAX];
 
 // ------------------------
 // Public functions
@@ -170,8 +171,12 @@ void HAL_adc_init() {
   // That's why we're not setting it up here.
 
   // Calculate ADC characteristics i.e. gain and offset factors for each attenuation level
-  for (int i = 0; i < ADC_ATTEN_MAX; i++)
+  for (int i = 0; i < ADC_ATTEN_MAX; i++) {
     esp_adc_cal_characterize(ADC_UNIT_1, (adc_atten_t)i, ADC_WIDTH_BIT_12, V_REF, &characteristics[i]);
+    
+    // change attenuation 100mV below the calibrated threshold
+    thresholds[i] = esp_adc_cal_raw_to_voltage(4095, &characteristics[i]) - 100;
+  }
 }
 
 void HAL_adc_start_conversion(uint8_t adc_pin) {
@@ -180,11 +185,11 @@ void HAL_adc_start_conversion(uint8_t adc_pin) {
   esp_adc_cal_get_voltage((adc_channel_t)chan, &characteristics[attenuations[chan]], &mv);
 
   // Change the attenuation level based on the new reading
-  if (mv < 1000) {
+  if (mv < thresholds[ADC_ATTEN_DB_0]) {
     adc1_set_attenuation(chan, ADC_ATTEN_DB_0);
-  } else if (mv < 1400) {
+  } else if (mv < thresholds[ADC_ATTEN_DB_2_5]) {
     adc1_set_attenuation(chan, ADC_ATTEN_DB_2_5);
-  } else if (mv < 2100) {
+  } else if (mv < thresholds[ADC_ATTEN_6db]) {
     adc1_set_attenuation(chan, ADC_ATTEN_6db);
   } else {
     adc1_set_attenuation(chan, ADC_ATTEN_11db);
