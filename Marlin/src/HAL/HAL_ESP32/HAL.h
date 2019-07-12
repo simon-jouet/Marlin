@@ -36,7 +36,10 @@
 
 #include "HAL_timers_ESP32.h"
 
-#include "WebSocketSerial.h"
+#if ENABLED(WIFISUPPORT)
+  #include "WebSocketSerial.h"
+#endif
+
 #include "FlushableHardwareSerial.h"
 
 // ------------------------
