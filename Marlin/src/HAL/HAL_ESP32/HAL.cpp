@@ -175,7 +175,7 @@ void HAL_adc_init() {
     esp_adc_cal_characterize(ADC_UNIT_1, (adc_atten_t)i, ADC_WIDTH_BIT_12, V_REF, &characteristics[i]);
     
     // change attenuation 100mV below the calibrated threshold
-    thresholds[i] = esp_adc_cal_raw_to_voltage(4095, &characteristics[i]) - 100;
+    thresholds[i] = esp_adc_cal_raw_to_voltage(4095, &characteristics[i]);
   }
 }
 
@@ -185,14 +185,14 @@ void HAL_adc_start_conversion(uint8_t adc_pin) {
   esp_adc_cal_get_voltage((adc_channel_t)chan, &characteristics[attenuations[chan]], &mv);
 
   // Change the attenuation level based on the new reading
-  if (mv < thresholds[ADC_ATTEN_DB_0]) {
+  if (mv < thresholds[ADC_ATTEN_DB_0] - 100) {
     adc1_set_attenuation(chan, ADC_ATTEN_DB_0);
-  } else if (mv < thresholds[ADC_ATTEN_DB_2_5]) {
+  } else if (mv > thresholds[ADC_ATTEN_DB_0] - 50 && mv < thresholds[ADC_ATTEN_DB_2_5] - 100) {
     adc1_set_attenuation(chan, ADC_ATTEN_DB_2_5);
-  } else if (mv < thresholds[ADC_ATTEN_6db]) {
-    adc1_set_attenuation(chan, ADC_ATTEN_6db);
-  } else {
-    adc1_set_attenuation(chan, ADC_ATTEN_11db);
+  } else if (mv > thresholds[ADC_ATTEN_DB_2_5] - 50 && mv < thresholds[ADC_ATTEN_DB_6] - 100) {
+    adc1_set_attenuation(chan, ADC_ATTEN_DB_6);
+  } else if (mv > thresholds[ADC_ATTEN_DB_6] - 50){
+    adc1_set_attenuation(chan, ADC_ATTEN_DB_11);
   }
 
   HAL_adc_result = mv*1023.0/3300.0;
